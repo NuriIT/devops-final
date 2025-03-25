@@ -57,7 +57,7 @@ kind: Service
 metadata:
   name: backend
 spec:
-  type: LoadBalancer  # Change to LoadBalancer if you need external access
+  type: LoadBalancer
   selector:
     app: backend
   ports:
