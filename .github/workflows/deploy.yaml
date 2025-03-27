@@ -29,7 +29,7 @@ jobs:
       - name: Configure kubectl for EKS
       
         run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name proshop-eks
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION_NURI }} --name proshop-eks
           kubectl get nodes
 
       - name: Deploy Application to EKS
