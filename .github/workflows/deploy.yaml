@@ -1,22 +1,45 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches:
+      - master  # Runs on every push to main branch
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up AWS CLI
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_NURI }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_NURI }}
-          region: ${{ secrets.AWS_REGION_NURI }} # Ensure the region is specified here
+          aws-region: ${{ secrets.AWS_REGION_NURI }}
 
-      - name: Update kubeconfig for EKS
+      - name: Install kubectl
         run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION _NURI}} --name proshop-eks
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-      - name: Get Kubernetes Nodes
+      - name: Configure kubectl for EKS
+      
         run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION_NURI }} --name proshop-eks
+
           kubectl get nodes
+
+      - name: Deploy Application to EKS
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/postgres-deployment.yaml
+
+      - name: Verify Deployment
+        run: |
+          kubectl get pods
+          kubectl get services
