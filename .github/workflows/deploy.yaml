@@ -37,7 +37,10 @@ jobs:
         run: |
           kubectl apply -f k8s/backend-deployment.yaml
           kubectl apply -f k8s/frontend-deployment.yaml
-          kubectl apply -f k8s/postgres-deployment.yaml
+          kubectl apply -f k8s/mongo-pvc.yml
+          kubectl apply -f k8s/mongo-secrets.yml
+          kubectl apply -f k8s/mongo-service.yml
+          kubectl apply -f k8s/mongo-statefulset.yml
 
       - name: Verify Deployment
         run: |
