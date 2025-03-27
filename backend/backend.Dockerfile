@@ -1,24 +1,22 @@
-# Use official Node.js image as base
+# Use official Node.js image
 FROM node:18
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (for caching npm install)
+# Copy package.json and package-lock.json first to leverage Docker caching
 COPY package.json package-lock.json ./
 
-# Install app dependencies
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code into the container
+# Copy the rest of the backend source code
 COPY . .
 
-# Expose port 5000 (make sure this is the port your app is using)
+# Expose the port the app runs on
 EXPOSE 5000
 
-# Set environment variables (optional, can be done in Kubernetes or as docker run params)
-# ENV NODE_ENV=production
+# Start the backend server
+CMD ["node", "server.js"]
 
-# Start the backend application
-CMD ["node", "index.js"]
 
