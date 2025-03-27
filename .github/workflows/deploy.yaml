@@ -1,44 +1,22 @@
-name: Deploy to EKS
-
-on:
-  push:
-    branches:
-      - master  # Runs on every push to main branch
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Configure AWS Credentials
+      - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_NURI }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_NURI }}
-          aws-region: ${{ secrets.AWS_REGION_NURI }}
+          region: ${{ secrets.AWS_REGION_NURI }} # Ensure the region is specified here
 
-      - name: Install kubectl
+      - name: Update kubeconfig for EKS
         run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION _NURI}} --name proshop-eks
 
-      - name: Configure kubectl for EKS
-      
+      - name: Get Kubernetes Nodes
         run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION_NURI }} --name proshop-eks
           kubectl get nodes
-
-      - name: Deploy Application to EKS
-        run: |
-          kubectl apply -f k8s/backend-deployment.yaml
-          kubectl apply -f k8s/frontend-deployment.yaml
-          kubectl apply -f k8s/mongo-deployment.yaml
-
-      - name: Verify Deployment
-        run: |
-          kubectl get pods
-          kubectl get services
