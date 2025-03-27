@@ -8,6 +8,8 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual  # Add a StorageClass (e.g., manual)
+  volumeMode: Filesystem
   hostPath:
-    path: "/mnt/data"
+    path: /mnt/data
 
