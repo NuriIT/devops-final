@@ -8,5 +8,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: manual  # Add the same StorageClass as the PV
+  storageClassName: manual  # Ensure this matches with PV
+
 
