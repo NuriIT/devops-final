@@ -8,9 +8,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: manual  # Ensure this matches with PVC
-  volumeMode: Filesystem
+  storageClassName: manual
   hostPath:
-    path: /mnt/data
+    path: /mnt/data/mongo
+    type: DirectoryOrCreate  # Ensures directory exists
 
 
