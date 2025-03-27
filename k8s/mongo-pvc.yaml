@@ -7,6 +7,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
-  volumeMode: Filesystem
-  volumeName: mongo-pv
+      storage: 1Gi
