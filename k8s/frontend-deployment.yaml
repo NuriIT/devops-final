@@ -6,6 +6,10 @@ metadata:
     app: frontend
 spec:
   replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: frontend
@@ -18,10 +22,12 @@ spec:
         - name: frontend
           image: nurgiza/node-frontend:latest
           ports:
-            - containerPort: 3000  # Changed from 80 (React typically runs on 3000)
+            - containerPort: 3000
           env:
             - name: REACT_APP_API_URL
-              value: "http://backend.default.svc.cluster.local:80"  # Full internal DNS
+              value: "http://backend:80"  # Simplified service name
+            - name: GENERATE_SOURCEMAP
+              value: "false"  # Better for production
           resources:
             limits:
               memory: "512Mi"
@@ -32,21 +38,23 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 3000  # Must match containerPort
-            initialDelaySeconds: 15  # Increased for React startup
+              port: 3000
+            initialDelaySeconds: 30  # Increased for React build time
             periodSeconds: 10
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
-              port: 3000  # Must match containerPort
+              port: 3000
             initialDelaySeconds: 5
             periodSeconds: 5
-          startupProbe:  # Added for React apps
+            successThreshold: 1
+          startupProbe:
             httpGet:
               path: /
               port: 3000
             failureThreshold: 30
-            periodSeconds: 5
+            periodSeconds: 10
 
 ---
 apiVersion: v1
@@ -58,6 +66,7 @@ spec:
   selector:
     app: frontend
   ports:
-    - protocol: TCP
-      port: 80        # External Port
-      targetPort: 3000  # Must match containerPort
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3000
