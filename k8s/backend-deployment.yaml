@@ -13,46 +13,23 @@ spec:
         app: backend
     spec:
       containers:
-        - name: backend
-          image: nurgiza/proshop-backend:latest
-          ports:
-            - containerPort: 5000
-          env:
-            - name: NODE_ENV
-              value: "production"
-            - name: MONGO_URI
-              value: "mongodb://root:example@mongo:27017/proshop?authSource=admin"
-            - name: PORT
-              value: "5000"
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-          livenessProbe:
-            httpGet:
-              path: /api/healthcheck  # Or your health check endpoint
-              port: 5000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /api/healthcheck
-              port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 10
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend
-spec:
-  selector:
-    app: backend
-  ports:
-    - protocol: TCP
-      port: 5000  # Changed from 80 to 5000 for consistency
-      targetPort: 5000
-  type: LoadBalancer
+      - name: backend
+        image: nurgiza/proshop-backend:latest
+        command: ["node"]  # Explicit command
+        args: ["server.js"]  # Assuming your main file is server.js
+        ports:
+        - containerPort: 5000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "5000"
+        - name: MONGO_URI
+          value: "mongodb://root:example@mongo:27017/proshop?authSource=admin"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
