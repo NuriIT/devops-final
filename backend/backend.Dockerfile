@@ -1,19 +1,18 @@
-# Use a Node.js base image
+# Use official Node.js image
 FROM node:18
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and install dependencies
 COPY package.json package-lock.json ./
-
 RUN npm install
 
-# Copy the rest of the application files
-COPY . ./
+# Copy backend source code
+COPY . .
 
-# Expose the application port
+# Expose the port
 EXPOSE 5000
 
-# Start the application
+# Start the backend
 CMD ["node", "index.js"]
